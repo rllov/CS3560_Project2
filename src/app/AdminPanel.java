@@ -11,6 +11,8 @@ import group.Group;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashSet;
+import java.util.Set;
 
 public class AdminPanel extends MiniTwitterForm implements ActionListener{
 
@@ -30,6 +32,7 @@ public class AdminPanel extends MiniTwitterForm implements ActionListener{
     private JPanel analysisPanel, treeViewPanel, userGroupManagementPanel;
     private JLabel userGroupManagementTitle, groupIDLabel, userIDLabel, treeViewTitle, analysisTitle, formTitle;
     private JButton addUserButton, addGroupButton, openUserViewButton, showUserTotalButton, showGroupTotalButton, showMessagesTotalButton, showPositivePercentageButton;
+    private JButton verifyIDsButton, findLastUpdatedUserButton;
 
     // Private constructor for Singleton pattern
     private AdminPanel(){
@@ -50,6 +53,9 @@ public class AdminPanel extends MiniTwitterForm implements ActionListener{
 
     // Initialization method
     public void init(){
+    	
+    	
+    
         // JFrame setup
         getContentPane().setLayout(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -154,7 +160,19 @@ public class AdminPanel extends MiniTwitterForm implements ActionListener{
         groupIDLabel.setBounds(10, 55, 160, 15);
         groupIDLabel.setForeground(Color.white);
         userGroupManagementPanel.add(groupIDLabel);
+        
+        // finding the last updated user
+        findLastUpdatedUserButton = new JButton("Find Last Updated User");
+        styleButton(findLastUpdatedUserButton,400, 460,  375, 35);
+        findLastUpdatedUserButton.addActionListener(this);
+        add(findLastUpdatedUserButton);
 
+    	// ID verification button
+        verifyIDsButton = new JButton("Verify IDs");
+        styleButton(verifyIDsButton, 10, 460, 375, 35);
+        verifyIDsButton.addActionListener(this);
+        add(verifyIDsButton);
+        
         // Making JFrame visible
         setVisible(true);
         System.out.println("Admin Panel Generated");
@@ -183,6 +201,12 @@ public class AdminPanel extends MiniTwitterForm implements ActionListener{
         }
         else if (ae.getSource() == showPositivePercentageButton){
             showPositivePercentage();
+        }
+        else if (ae.getSource() == verifyIDsButton) {
+            verifyUserGroupIDs();
+        }
+        else if (ae.getSource() == findLastUpdatedUserButton) {
+            findLastUpdatedUser();
         }
     }
 
@@ -278,4 +302,101 @@ public class AdminPanel extends MiniTwitterForm implements ActionListener{
         }
         return result;
     }
+    
+    private void verifyUserGroupIDs() {
+        Set<String> allIDs = new HashSet<>();
+        if (verifyIDs(rootUserElement, allIDs)) {
+            JOptionPane.showMessageDialog(this, "All IDs are valid.", "ID Verification", JOptionPane.PLAIN_MESSAGE);
+            System.out.println("All IDs are valid.");
+        } else {
+            JOptionPane.showMessageDialog(this, "Not all IDs are valid.", "ID Verification", JOptionPane.ERROR_MESSAGE);
+            System.out.println("Not all IDs are valid.");
+        }
+    }
+
+    // Recursive method to verify IDs
+    private boolean verifyIDs(UserElement element, Set<String> allIDs) {
+        if (element != null) {
+            String id = element.getUniqueID();
+            if (id != null && !id.trim().isEmpty() && !id.contains(" ")) {
+                if (allIDs.add(id)) {
+                    if (element instanceof Group) {
+                        for (int i = 0; i < element.getChildCount(); i++) {
+                            if (!verifyIDs(element.getChild(i), allIDs)) {
+                                return false;
+                            }
+                        }
+                    }
+                    return true;
+                } else {
+                    return false; // Duplicate ID found
+                }
+            }
+        }
+        return false; // Invalid ID found
+    }
+    
+
+    private void findLastUpdatedUser() {
+        UserElement lastUpdatedUser = findLastUpdatedUser(rootUserElement);
+        
+        if (lastUpdatedUser != null) {
+            long lastUpdateTime = 0;
+            if (lastUpdatedUser instanceof User) {
+                lastUpdateTime = ((User) lastUpdatedUser).getLastUpdateTime();
+            } else if (lastUpdatedUser instanceof Group) {
+                // Handle finding lastUpdateTime for a Group (if needed)
+            }
+
+            JOptionPane.showMessageDialog(
+                this, "Last updated user: " + lastUpdatedUser.getUniqueID() +
+                "\nLast update time: " + lastUpdateTime,
+                "Last Updated User", JOptionPane.PLAIN_MESSAGE);
+
+            System.out.println("Last updated user: " + lastUpdatedUser.getUniqueID());
+            System.out.println("Last update time: " + lastUpdateTime + "milliseconds");
+        } else {
+            JOptionPane.showMessageDialog(
+                this, "No users found.", "Last Updated User", JOptionPane.ERROR_MESSAGE);
+
+            System.out.println("No users found.");
+        }
+    }
+
+    // Recursive method to find the last updated user
+    private UserElement findLastUpdatedUser(UserElement element) {
+        if (element != null) {
+            if (element instanceof User) {
+                return element; // User is the leaf node
+            } else if (element instanceof Group) {
+                UserElement lastUpdatedUser = null;
+                long maxLastUpdateTime = 0;
+
+                for (int i = 0; i < element.getChildCount(); i++) {
+                    UserElement child = element.getChild(i);
+                    UserElement updatedUser = findLastUpdatedUser(child);
+
+                    if (updatedUser != null) {
+                        long childLastUpdateTime;
+                        if (updatedUser instanceof User) {
+                            childLastUpdateTime = ((User) updatedUser).getLastUpdateTime();
+                        } else {
+                            // Handle finding lastUpdateTime for a Group (if needed)
+                            childLastUpdateTime = 0;
+                        }
+
+                        if (childLastUpdateTime > maxLastUpdateTime) {
+                            maxLastUpdateTime = childLastUpdateTime;
+                            lastUpdatedUser = updatedUser;
+                        }
+                    }
+                }
+
+                return lastUpdatedUser;
+            }
+        }
+
+        return null;
+    }
+
 }

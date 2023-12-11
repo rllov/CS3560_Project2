@@ -29,6 +29,9 @@ public class UserView extends MiniTwitterForm {
     private JTextField tweetTextField;              
     private JLabel newsFeedTitle;                   
     private JLabel tweetLabel;                     
+    private JLabel creationTimeLabel; // New label to display creationTime
+
+    
     
     public UserView(User user){
         this.user = user;
@@ -39,8 +42,14 @@ public class UserView extends MiniTwitterForm {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setResizable(false);
         setTitle("Mini-Twitter @" + user.getUniqueID());
-        setSize(400, 575);
+        setSize(500, 600);
         setLocationRelativeTo(null);
+        
+     // Initialize and style creationTime label
+        creationTimeLabel = new JLabel("Creation Time: " + user.getCreationTime()/1000 + " milliseconds");
+        creationTimeLabel.setBounds(200, 10, 250, 15);
+        creationTimeLabel.setForeground(Color.black);
+        add(creationTimeLabel);
         
         userIDLabel = new JLabel("@" + user.getUniqueID());
         userIDLabel.setBounds(10,5,200,50);
@@ -138,4 +147,10 @@ public class UserView extends MiniTwitterForm {
             followUserIDTextField.setText("");
         }
     }  
+    
+    public void updateCreationTimeLabel() {
+        creationTimeLabel.setText("Creation Time: " + user.getCreationTime());
+    }
+    
+    
 }

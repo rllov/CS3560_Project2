@@ -18,13 +18,19 @@ public class User extends Subject implements Observer, UserElement {
     private UserView userView;
     private final String iconURL = "/resources/person.png";
     private ArrayList<User> followers;
-
+    private long creationTime;
+	private long lastUpdateTime;
+    
     /**
      * Constructs a new User with the specified tree model and unique identifier.
      */
     public User(UserElementTreeModel userElementTreeModel, String userID) {
         this.userElementTreeModel = userElementTreeModel;
         this.userID = userID;
+        this.creationTime = System.currentTimeMillis(); // Initialize creationTime
+        this.lastUpdateTime = this.creationTime;
+
+        
         
         userView = new UserView(this);
         userTweets = new ArrayList<>();
@@ -73,6 +79,8 @@ public class User extends Subject implements Observer, UserElement {
     public void postTweet(String tweet) {
         userTweets.add(tweet);
         notifyObservers();
+        long lastUpdateTime = System.currentTimeMillis();
+
     }
     
     /**
@@ -144,4 +152,15 @@ public class User extends Subject implements Observer, UserElement {
     public void openUserView(){
         userView.setVisible(true);
     }
+    
+    // Add a getter for creationTime
+    public long getCreationTime() {
+        return creationTime;
+    }
+    
+    public long getLastUpdateTime() {
+        return lastUpdateTime;
+    }
+
+
 }

@@ -10,10 +10,13 @@ public class Group implements UserElement{
     private String uniqueID;                                
     private ArrayList<UserElement> children;                       
     private final String iconURL = "/resources/cloud.png"; 
+    private long creationTime; // New attribute
+
     
     public Group(UserElementTreeModel treeModel, String uniqueID){
         this.treeModel = treeModel;
         this.uniqueID = uniqueID;
+        this.creationTime = System.currentTimeMillis(); // Initialize creationTime
         children = new ArrayList<>();
     }
     
@@ -65,6 +68,10 @@ public class Group implements UserElement{
     @Override
     public String toString(){
         return uniqueID;
+    }
+    
+    public long getCreationTime() {
+        return creationTime;
     }
 
 }
