@@ -5,6 +5,7 @@ import observer.Subject;
 import tree.UserElementTreeModel;
 import visitor.Visitor;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Represents a user in the Mini Twitter application.
@@ -27,7 +28,7 @@ public class User extends Subject implements Observer, UserElement {
     public User(UserElementTreeModel userElementTreeModel, String userID) {
         this.userElementTreeModel = userElementTreeModel;
         this.userID = userID;
-        this.creationTime = System.currentTimeMillis(); // Initialize creationTime
+        this.creationTime = new Date().getTime(); // Initialize creationTime
         this.lastUpdateTime = this.creationTime;
 
         
@@ -40,6 +41,9 @@ public class User extends Subject implements Observer, UserElement {
         userView.init();
         attach(this);
         followers.add(this);
+        
+        System.out.println("User " + userID + " created at: " + new Date(creationTime));
+
     }
 
     /**

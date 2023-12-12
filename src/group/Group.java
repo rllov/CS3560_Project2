@@ -4,6 +4,7 @@ import tree.UserElementTreeModel;
 import user.UserElement;
 import visitor.Visitor;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class Group implements UserElement{
     private UserElementTreeModel treeModel;                         
@@ -16,8 +17,10 @@ public class Group implements UserElement{
     public Group(UserElementTreeModel treeModel, String uniqueID){
         this.treeModel = treeModel;
         this.uniqueID = uniqueID;
-        this.creationTime = System.currentTimeMillis(); // Initialize creationTime
+        this.creationTime = new Date().getTime(); // Initialize creationTime
         children = new ArrayList<>();
+        System.out.println("Group " + uniqueID + " created at: " + new Date(creationTime));
+
     }
     
     @Override

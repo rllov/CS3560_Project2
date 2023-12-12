@@ -2,6 +2,8 @@ package user;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.Date;
+
 import javax.swing.*;
 
 import app.MiniTwitterForm;
@@ -46,7 +48,7 @@ public class UserView extends MiniTwitterForm {
         setLocationRelativeTo(null);
         
      // Initialize and style creationTime label
-        creationTimeLabel = new JLabel("Creation Time: " + user.getCreationTime()/1000 + " milliseconds");
+        creationTimeLabel = new JLabel("Creation Time: " + new Date(user.getCreationTime()) + " milliseconds");
         creationTimeLabel.setBounds(200, 10, 250, 15);
         creationTimeLabel.setForeground(Color.black);
         add(creationTimeLabel);
